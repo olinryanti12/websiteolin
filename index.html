@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aplikasi Jastip Lengkap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 90%;
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .resi {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f1f1f1;
+      border-radius: 8px;
+      display: none;
+    }
+    .resi h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .resi p {
+      margin: 5px 0;
+    }
+    .resi button {
+      background: #28a745;
+    }
+    .resi button:hover {
+      background: #218838;
+    }
+    .resi .hapus-btn {
+      background: #dc3545;
+    }
+    .resi .hapus-btn:hover {
+      background: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Formulir Jastip</h1>
+    <form id="jastipForm">
+      <label>Nama Pengirim:</label>
+      <input type="text" id="namaPengirim" required>
+
+      <label>Alamat Pengirim:</label>
+      <textarea id="alamatPengirim" required></textarea>
+
+      <label>No HP Pengirim:</label>
+      <input type="text" id="hpPengirim" required>
+
+      <label>Nama Penerima:</label>
+      <input type="text" id="namaPenerima" required>
+
+      <label>Alamat Penerima:</label>
+      <textarea id="alamatPenerima" required></textarea>
+
+      <label>No HP Penerima:</label>
+      <input type="text" id="hpPenerima" required>
+
+      <label>Jenis Barang:</label>
+      <input type="text" id="jenisBarang" required>
+
+      <label>Berat Barang (kg):</label>
+      <input type="number" id="beratBarang" min="0.1" step="0.1" required>
+
+      <label>Estimasi Hari:</label>
+      <input type="number" id="estimasiHari" min="1" required>
+
+      <button type="button" onclick="buatResi()">Buat Resi</button>
+    </form>
+
+    <div class="resi" id="resiOutput">
+      <h2>Resi Jastip</h2>
+      <p><strong>No Resi:</strong> <span id="noResi"></span></p>
+      <p><strong>Pengirim:</strong> <span id="outNamaPengirim"></span></p>
+      <p><strong>Alamat Pengirim:</strong> <span id="outAlamatPengirim"></span></p>
+      <p><strong>HP Pengirim:</strong> <span id="outHpPengirim"></span></p>
+      <p><strong>Penerima:</strong> <span id="outNamaPenerima"></span></p>
+      <p><strong>Alamat Penerima:</strong> <span id="outAlamatPenerima"></span></p>
+      <p><strong>HP Penerima:</strong> <span id="outHpPenerima"></span></p>
+      <p><strong>Jenis Barang:</strong> <span id="outJenisBarang"></span></p>
+      <p><strong>Berat Barang:</strong> <span id="outBeratBarang"></span> kg</p>
+      <p><strong>Harga per Kg:</strong> Rp7.000</p>
+      <p><strong>Total Harga:</strong> Rp<span id="outTotalHarga"></span></p>
+      <p><strong>Estimasi:</strong> <span id="outEstimasiHari"></span> hari</p>
+
+      <button onclick="window.print()">Cetak Resi</button>
+      <button onclick="cetakUlang()">Cetak Resi Kembali</button>
+      <button onclick="resiBaru()">Buat Resi Baru</button>
+      <button class="hapus-btn" onclick="hapusResi()">Hapus Resi</button>
+    </div>
+  </div>
+
+  <script>
+    function buatResi() {
+      const hargaPerKg = 7000;
+
+      let namaPengirim = document.getElementById("namaPengirim").value;
+      let alamatPengirim = document.getElementById("alamatPengirim").value;
+      let hpPengirim = document.getElementById("hpPengirim").value;
+      let namaPenerima = document.getElementById("namaPenerima").value;
+      let alamatPenerima = document.getElementById("alamatPenerima").value;
+      let hpPenerima = document.getElementById("hpPenerima").value;
+      let jenisBarang = document.getElementById("jenisBarang").value;
+      let beratBarang = parseFloat(document.getElementById("beratBarang").value);
+      let estimasiHari = document.getElementById("estimasiHari").value;
+
+      if (!namaPengirim || !alamatPengirim || !hpPengirim ||
+          !namaPenerima || !alamatPenerima || !hpPenerima ||
+          !jenisBarang || isNaN(beratBarang) || beratBarang <= 0 || !estimasiHari) {
+        alert("Semua data harus diisi dengan benar!");
+        return;
+      }
+
+      let totalHarga = beratBarang * hargaPerKg;
+      let noResi = "JST-" + Math.floor(Math.random() * 900000 + 100000);
+
+      document.getElementById("noResi").innerText = noResi;
+      document.getElementById("outNamaPengirim").innerText = namaPengirim;
+      document.getElementById("outAlamatPengirim").innerText = alamatPengirim;
+      document.getElementById("outHpPengirim").innerText = hpPengirim;
+      document.getElementById("outNamaPenerima").innerText = namaPenerima;
+      document.getElementById("outAlamatPenerima").innerText = alamatPenerima;
+      document.getElementById("outHpPenerima").innerText = hpPenerima;
+      document.getElementById("outJenisBarang").innerText = jenisBarang;
+      document.getElementById("outBeratBarang").innerText = beratBarang.toFixed(1);
+      document.getElementById("outTotalHarga").innerText = totalHarga.toLocaleString("id-ID");
+      document.getElementById("outEstimasiHari").innerText = estimasiHari;
+
+      document.getElementById("resiOutput").style.display = "block";
+    }
+
+    function cetakUlang() {
+      const resiDiv = document.getElementById("resiOutput");
+      if (resiDiv.style.display === "block") {
+        window.print();
+      } else {
+        alert("Belum ada resi yang bisa dicetak ulang.");
+      }
+    }
+
+    function hapusResi() {
+      document.getElementById("resiOutput").style.display = "none";
+    }
+
+    function resiBaru() {
+      document.getElementById("jastipForm").reset();
+      document.getElementById("resiOutput").style.display = "none";
+    }
+  </script>
+</body>
+</html>
+
+        
